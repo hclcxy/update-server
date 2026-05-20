@@ -1,0 +1,20 @@
+{
+  "versions": [
+    {
+      "id": 1779094952992,
+      "version": "V1.0.1",
+      "note": "版本2",
+      "filename": "Test-V1.0.1.exe",
+      "platform": "windows",
+      "createdAt": "2026-05-18T09:02:32.992Z"
+    },
+    {
+      "id": 1779094870279,
+      "version": "V1.0.0",
+      "note": "版本1",
+      "filename": "Test-V1.0.0.exe",
+      "platform": "windows",
+      "createdAt": "2026-05-18T09:01:10.279Z"
+    }
+  ]
+}

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程序更新管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f6fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        header h1 { font-size: 2em; margin-bottom: 10px; }
+        header p { opacity: 0.9; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.3em;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #219a52;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-primary { background: #e3f2fd; color: #1976d2; }
+        .badge-success { background: #e8f5e9; color: #388e3c; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        .path-display {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #666;
+            word-break: break-all;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #fafafa;
+        }
+        .file-info { flex: 1; }
+        .file-name { font-weight: 600; color: #333; }
+        .file-meta { font-size: 12px; color: #999; margin-top: 2px; }
+        .file-actions { display: flex; gap: 8px; }
+        .btn-sm { padding: 5px 15px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>程序更新管理系统</h1>
+        <p>管理程序版本、下载文件和配置</p>
+    </header>
+
+    <div class="container">
+        <div id="alertBox" class="alert"></div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>下载路径设置</h2>
+                <div class="form-group">
+                    <label>当前下载路径</label>
+                    <div class="path-display" id="currentPath">加载中...</div>
+                </div>
+                <div class="form-group">
+                    <label for="newPath">设置新路径（绝对路径）</label>
+                    <input type="text" id="newPath" placeholder="例如: C:\\Program Files\\MyApp">
+                </div>
+                <button class="btn btn-primary" onclick="updatePath()">保存路径</button>
+            </div>
+
+            <div class="card">
+                <h2>添加新版本</h2>
+                <div class="form-group">
+                    <label for="version">版本号</label>
+                    <input type="text" id="version" placeholder="例如: 1.0.0">
+                </div>
+                <div class="form-group">
+                    <label for="platform">平台</label>
+                    <select id="platform">
+                        <option value="all">全部</option>
+                        <option value="windows">Windows</option>
+                        <option value="android">Android</option>
+                        <option value="ios">iOS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="note">更新说明</label>
+                    <textarea id="note" placeholder="输入更新内容..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="filename">文件名（必须在下载目录中）</label>
+                    <input type="text" id="filename" placeholder="例如: app-v1.0.0.exe">
+                </div>
+                <button class="btn btn-success" onclick="addVersion()">添加版本</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>版本历史</h2>
+            <div id="versionsList">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <p>暂无版本记录</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>可下载文件</h2>
+            <div id="filesList">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                        <polyline points="13 2 13 9 20 9"/>
+                    </svg>
+                    <p>下载目录为空</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function showAlert(message, type = 'success') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+        }
+
+        async function loadConfig() {
+            try {
+                const res = await fetch(`${API_BASE}/api/config`);
+                const data = await res.json();
+                document.getElementById('currentPath').textContent = data.downloadPath;
+            } catch (e) {
+                showAlert('加载配置失败', 'error');
+            }
+        }
+
+        async function updatePath() {
+            const newPath = document.getElementById('newPath').value.trim();
+            if (!newPath) {
+                showAlert('请输入路径', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/config`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ downloadPath: newPath })
+                });
+                const data = await res.json();
+                document.getElementById('currentPath').textContent = data.downloadPath;
+                document.getElementById('newPath').value = '';
+                showAlert('路径设置成功');
+                loadFiles();
+            } catch (e) {
+                showAlert('设置路径失败', 'error');
+            }
+        }
+
+        async function loadVersions() {
+            try {
+                const res = await fetch(`${API_BASE}/api/versions`);
+                const data = await res.json();
+                const container = document.getElementById('versionsList');
+                if (!data.versions || data.versions.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                            <p>暂无版本记录</p>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>版本号</th>
+                                <th>平台</th>
+                                <th>更新说明</th>
+                                <th>文件名</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.versions.map(v => `
+                                <tr>
+                                    <td><span class="badge badge-primary">${v.version}</span></td>
+                                    <td><span class="badge badge-success">${v.platform}</span></td>
+                                    <td>${v.note || '-'}</td>
+                                    <td>${v.filename}</td>
+                                    <td>${new Date(v.createdAt).toLocaleString()}</td>
+                                    <td>
+                                        <a href="${API_BASE}/api/download/${v.filename}" class="btn btn-success btn-sm" download>下载</a>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteVersion(${v.id})">删除</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (e) {
+                showAlert('加载版本失败', 'error');
+            }
+        }
+
+        async function downloadToLocal(filename, localPath, rename) {
+            try {
+                const res = await fetch(`${API_BASE}/api/download/${filename}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ localPath, rename })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showAlert(`文件已保存到: ${data.target}`);
+                } else {
+                    showAlert(data.error || '保存失败', 'error');
+                }
+            } catch (e) {
+                showAlert('保存失败: ' + e.message, 'error');
+            }
+        }
+
+        async function addVersion() {
+            const version = document.getElementById('version').value.trim();
+            const platform = document.getElementById('platform').value;
+            const note = document.getElementById('note').value.trim();
+            const filename = document.getElementById('filename').value.trim();
+
+            if (!version || !filename) {
+                showAlert('版本号和文件名不能为空', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/versions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ version, platform, note, filename })
+                });
+                if (res.ok) {
+                    document.getElementById('version').value = '';
+                    document.getElementById('note').value = '';
+                    document.getElementById('filename').value = '';
+                    showAlert('版本添加成功');
+                    loadVersions();
+                } else {
+                    showAlert('添加版本失败', 'error');
+                }
+            } catch (e) {
+                showAlert('添加版本失败', 'error');
+            }
+        }
+
+        async function deleteVersion(id) {
+            if (!confirm('确定删除此版本记录？')) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/versions/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showAlert('删除成功');
+                    loadVersions();
+                }
+            } catch (e) {
+                showAlert('删除失败', 'error');
+            }
+        }
+
+        async function loadFiles() {
+            try {
+                const res = await fetch(`${API_BASE}/api/files`);
+                const data = await res.json();
+                const container = document.getElementById('filesList');
+                if (!data.files || data.files.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                                <polyline points="13 2 13 9 20 9"/>
+                            </svg>
+                            <p>下载目录为空</p>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = data.files.map(f => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-name">${f.name}</div>
+                            <div class="file-meta">${formatSize(f.size)} · ${new Date(f.modified).toLocaleString()}</div>
+                        </div>
+                        <div class="file-actions">
+                            <a href="${API_BASE}/api/download/${f.name}" class="btn btn-success btn-sm" download>下载</a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                showAlert('加载文件列表失败', 'error');
+            }
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadVersions();
+            loadFiles();
+        });
+    </script>
+</body>
+</html>
